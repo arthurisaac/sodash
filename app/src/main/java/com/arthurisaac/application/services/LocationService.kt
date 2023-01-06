@@ -1,4 +1,4 @@
-package com.arthurisaac.application
+package com.arthurisaac.application.services
 
 import android.app.NotificationManager
 import android.app.Service
@@ -7,7 +7,10 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.arthurisaac.application.DefaultLocationClient
+import com.arthurisaac.application.R
 import com.arthurisaac.application.interfaces.LocationClient
+import com.arthurisaac.application.providers.Database
 import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.CoroutineScope
@@ -45,35 +48,35 @@ class LocationService : Service() {
     }
 
     private fun start() {
-        Log.d("AI", "Service started!")
         val position: MutableMap<String, Any> = mutableMapOf()
-
         val notification = NotificationCompat.Builder(this, "location")
             .setContentTitle("Tracking location...")
             .setContentText("Location: null")
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setOngoing(true)
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         locationClient
-            .getLocationUpdates(1000L)
+            .getLocationUpdates(10000L)
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
-                val lat = location.latitude.toString().takeLast(3)
-                val long = location.longitude.toString().takeLast(3)
+                val lat = location.latitude.toString()
+                val long = location.longitude.toString()
                 val updatedNotification = notification.setContentText(
                     "Location: ($lat, $long)"
                 )
-                Log.d("AI", "Location: ($lat, $long)")
-                val currDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(Date())
-                val currTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
+                val currDate = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault()).format(Date())
+                Log.d("AI", "Location: ($lat, $long, $currDate)")
+                //val currTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
                 position["lat"] = lat
                 position["long"] = long
-                val database = FirebaseDatabase.getInstance()
-                database.useEmulator("10.0.2.2", 9000)
-                database.reference.child("users-email").child("POSITION").child(currDate).child(currTime).setValue(position)
+                position["date"] = currDate
+                Database.DBReference()
+                    .child("POSITION")
+                    .child(currDate)
+                    .updateChildren(position)
                 notificationManager.notify(1, updatedNotification.build())
             }
             .launchIn(serviceScope)

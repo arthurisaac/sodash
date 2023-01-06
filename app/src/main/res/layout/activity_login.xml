@@ -4,28 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".auth.LoginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:padding="16dp"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_hide"
-            android:layout_height="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_email"
             android:layout_width="match_parent"
-            android:text="Cacher" />
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            android:hint="@string/entrer_votre_adresse_email"/>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:inputType="textPassword"
+            android:hint="@string/entrer_votre_mot_de_passe" />
 
         <Button
-            android:id="@+id/btn_logout"
+            android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F44336"
-            android:text="Logout"
-            app:rippleColor="#FF5722" />
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:text="@string/connexion" />
 
     </LinearLayout>
 
